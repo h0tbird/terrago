@@ -36,8 +36,8 @@ type Manifest struct {
 // Methods
 //-----------------------------------------------------------------------------
 
-// New ...
-func New() *Manifest {
+// NewManifest ...
+func NewManifest() *Manifest {
 	return &Manifest{
 		Resources: map[string]*Resource{},
 		Dag:       dag.AcyclicGraph{},

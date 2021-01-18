@@ -6,6 +6,10 @@
 # be initialized for a second time. The solution below copies the 'dag'
 # package from upstream and it also copies (and renames to 'tfd') the 'tfdiags'
 # package which is the one containing the duplicated types.
+#
+# Related to:
+#  https://github.com/hashicorp/terraform-plugin-sdk/issues/277
+#  https://github.com/hashicorp/terraform/issues/23725
 #------------------------------------------------------------------------------
 
 dag-code: NAME := terraform

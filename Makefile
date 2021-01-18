@@ -7,12 +7,24 @@
 SHELL = /bin/bash
 
 #------------------------------------------------------------------------------
-# Run targets inside docker
+# The variables below are used to run the make targets inside docker.
+# The version of make in OSX is 3.81 but the one inside the container is 4.3
 #------------------------------------------------------------------------------
 
 MAKE_DOCKER_TAG := latest
 MAKE_DOCKER_IMG := makefile-builder
 MAKE_DOCKER_CMD := ./bin/docker ${MAKE_DOCKER_IMG}:${MAKE_DOCKER_TAG}
+
+#------------------------------------------------------------------------------
+# This target opens a SHELL inside the MAKE_DOCKER_IMG
+#------------------------------------------------------------------------------
+
+.PHONY: bash
+ifeq ($(SKIP_DOCKER),)
+bash: ; @ ${MAKE_DOCKER_CMD} make bash
+else
+bash: ; @ bash
+endif
 
 #------------------------------------------------------------------------------
 # Terrago is using the Terraform DAG implementation. The initial idea was to
@@ -41,9 +53,8 @@ dag-code:
 	git clone --depth 1 --branch ${VERSION} https://github.com/hashicorp/${NAME}.git ${TMPDIR}
 	rsync -a --delete --exclude='.*' ${TMPDIR}/dag/ internal/dag
 	rsync -a --delete --exclude='.*' ${TMPDIR}/tfdiags/ internal/tfd
-	rm -rf ${TMPDIR}
-	sed -i 's/tfdiags/tfd/g' internal/dag/* internal/tfd/*
 	sed -i 's_github.com/hashicorp/terraform/tfd_github.com/h0tbird/terrago/internal/tfd_g' internal/dag/*
 	sed -i '/github.com\/hashicorp\/terraform\/internal\/logging/d' internal/dag/dag_test.go
-	gofmt -w internal
+	sed -i 's/tfdiags/tfd/g' internal/dag/* internal/tfd/*
+	gofmt -w internal && rm -rf ${TMPDIR}
 endif

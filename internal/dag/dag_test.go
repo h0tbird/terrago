@@ -3,6 +3,8 @@ package dag
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"reflect"
 	"strconv"
@@ -11,10 +13,20 @@ import (
 	"testing"
 
 	"github.com/h0tbird/terrago/internal/tfd"
+
+	"github.com/hashicorp/terraform/helper/logging"
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
+	if testing.Verbose() {
+		// if we're verbose, use the logging requested by TF_LOG
+		logging.SetOutput()
+	} else {
+		// otherwise silence all logs
+		log.SetOutput(ioutil.Discard)
+	}
+
 	os.Exit(m.Run())
 }
 
@@ -338,7 +350,7 @@ func BenchmarkDAG(b *testing.B) {
 		// layer B
 		for i := 0; i < count; i++ {
 			B := fmt.Sprintf("B%d", i)
-			g.Add(B)
+			g.Add(fmt.Sprintf(B))
 			for j := 0; j < count; j++ {
 				g.Connect(BasicEdge(B, fmt.Sprintf("A%d", j)))
 			}
@@ -347,7 +359,7 @@ func BenchmarkDAG(b *testing.B) {
 		// layer C
 		for i := 0; i < count; i++ {
 			c := fmt.Sprintf("C%d", i)
-			g.Add(c)
+			g.Add(fmt.Sprintf(c))
 			for j := 0; j < count; j++ {
 				// connect them to previous layers so we have something that requires reduction
 				g.Connect(BasicEdge(c, fmt.Sprintf("A%d", j)))
@@ -358,7 +370,7 @@ func BenchmarkDAG(b *testing.B) {
 		// layer D
 		for i := 0; i < count; i++ {
 			d := fmt.Sprintf("D%d", i)
-			g.Add(d)
+			g.Add(fmt.Sprintf(d))
 			for j := 0; j < count; j++ {
 				g.Connect(BasicEdge(d, fmt.Sprintf("A%d", j)))
 				g.Connect(BasicEdge(d, fmt.Sprintf("B%d", j)))

@@ -98,12 +98,12 @@ func (r SourceRange) ToHCL() hcl.Range {
 // problem, but could produce an awkward result in some special cases such
 // as converting the result of ConsolidateWarnings, which will force the
 // resulting warning groups to be flattened early.
-func (diags Diagnostics) ToHCL() hcl.Diagnostics {
-	if len(diags) == 0 {
+func (d Diagnostics) ToHCL() hcl.Diagnostics {
+	if len(d) == 0 {
 		return nil
 	}
-	ret := make(hcl.Diagnostics, len(diags))
-	for i, diag := range diags {
+	ret := make(hcl.Diagnostics, len(d))
+	for i, diag := range d {
 		severity := diag.Severity()
 		desc := diag.Description()
 		source := diag.Source()

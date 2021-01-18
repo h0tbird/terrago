@@ -1,4 +1,12 @@
 #------------------------------------------------------------------------------
+# Run targets inside docker
+#------------------------------------------------------------------------------
+
+MAKE_DOCKER_TAG := latest
+MAKE_DOCKER_IMG := makefile-builder
+MAKE_DOCKER_CMD := ./bin/docker ${MAKE_DOCKER_IMG}:${MAKE_DOCKER_TAG}
+
+#------------------------------------------------------------------------------
 # Terrago is using the Terraform DAG implementation. The initial idea was to
 # consume the upstream 'dag' package as a library. But importing and using
 # 'terraform' into this project alongside 'terraform-plugin-sdk' causes panics
@@ -12,15 +20,21 @@
 #  https://github.com/hashicorp/terraform/issues/23725
 #------------------------------------------------------------------------------
 
+.PHONY: dag-code
+ifeq ($(SKIP_DOCKER),)
+dag-code: ; @ ${MAKE_DOCKER_CMD} make dag-code
+else
 dag-code: NAME := terraform
 dag-code: VERSION := v0.14.4
 dag-code: TMPDIR := $(shell mktemp -d)
 dag-code:
+	@git config --global advice.detachedHead false
 	@git clone --depth 1 --branch ${VERSION} https://github.com/hashicorp/${NAME}.git ${TMPDIR}
 	@rsync -a --delete --exclude='.*' ${TMPDIR}/dag/ internal/dag
 	@rsync -a --delete --exclude='.*' ${TMPDIR}/tfdiags/ internal/tfd
 	@rm -rf ${TMPDIR}
-	@gsed -i 's/tfdiags/tfd/g' internal/dag/* internal/tfd/*
-	@gsed -i 's_github.com/hashicorp/terraform/tfd_github.com/h0tbird/terrago/internal/tfd_g' internal/dag/*
-	@gsed -i '/github.com\/hashicorp\/terraform\/internal\/logging/d' internal/dag/dag_test.go
+	@sed -i 's/tfdiags/tfd/g' internal/dag/* internal/tfd/*
+	@sed -i 's_github.com/hashicorp/terraform/tfd_github.com/h0tbird/terrago/internal/tfd_g' internal/dag/*
+	@sed -i '/github.com\/hashicorp\/terraform\/internal\/logging/d' internal/dag/dag_test.go
 	@gofmt -w internal
+endif

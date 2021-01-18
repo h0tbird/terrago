@@ -1,3 +1,3 @@
 FROM alpine
 
-RUN apk add make git rsync go
+RUN apk add make bash git rsync go

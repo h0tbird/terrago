@@ -2,7 +2,7 @@
 
 This git repository contains one Go module with one Go package at the root directory.
 The module path is `github.com/h0tbird/terrago` which is also the import path used for the root directory.
-It is intended to be consumed as a library by adding `import "github.com/h0tbird/terrago"` to the code.
+It is intended to be consumed as a library by adding `import "github.com/h0tbird/terrago"` to your code.
 
 ### Architecture
 A `Manifest` is a collection of `Resource`s stored in a hash table and its corresponding dependency DAG.

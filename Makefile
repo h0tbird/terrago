@@ -45,12 +45,12 @@ ifeq ($(SKIP_DOCKER),)
 dag-code: ; @ ${MAKE_DOCKER_CMD} make dag-code
 else
 dag-code: NAME := terraform
-dag-code: VERSION := v0.14.4
+dag-code: VERSION := v0.14.8
 dag-code: TMPDIR := $(shell mktemp -d)
 dag-code:
 	@ # Suppress echoing
-	git config --global advice.detachedHead false
-	git clone --depth 1 --branch ${VERSION} https://github.com/hashicorp/${NAME}.git ${TMPDIR}
+	git -c "advice.detachedHead=false" clone --depth 1 \
+	--branch ${VERSION} https://github.com/hashicorp/${NAME}.git ${TMPDIR}
 	rsync -a --delete --exclude='.*' ${TMPDIR}/dag/ internal/dag
 	rsync -a --delete --exclude='.*' ${TMPDIR}/tfdiags/ internal/tfd
 	sed -i 's_github.com/hashicorp/terraform/tfd_github.com/h0tbird/terrago/internal/tfd_g' internal/dag/*

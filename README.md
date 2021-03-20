@@ -9,3 +9,10 @@ It is intended to be consumed as a library by adding `import "github.com/h0tbird
 ### Architecture
 A `Manifest` is a collection of `Resource`s stored in a hash table and its corresponding dependency DAG.
 When a `Manifest` is applied, the DAG is generated and walked and that's when `Resource`s are reconciled.
+
+### Development
+Upgrade all dependencies at once:
+```
+go get -u ./...
+go mod tidy
+```

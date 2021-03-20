@@ -14,6 +14,7 @@ When a `Manifest` is applied, the DAG is generated and walked and that's when `R
 ### Development
 Upgrade all dependencies at once:
 ```
+go mod edit -go=1.16
 go get -u ./...
 go mod tidy
 ```
